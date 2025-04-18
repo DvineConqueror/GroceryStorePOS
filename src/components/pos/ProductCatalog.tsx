@@ -1,0 +1,156 @@
+
+import { Search, Plus, Trash2, Edit, Check } from 'lucide-react';
+import { useState } from 'react';
+import { usePos } from '@/context/PosContext';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { formatCurrency } from '@/utils/format';
+import { ProductForm } from './ProductForm';
+import { Button } from '@/components/ui/button';
+import { DeleteProductDialog } from './DeleteProductDialog';
+import { Product } from '@/types'; // Add this import
+
+export function ProductCatalog() {
+  const { state, addToCart, fetchProducts } = usePos();
+  const { products } = state;
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showAddProduct, setShowAddProduct] = useState(false);
+  const [deleteProduct, setDeleteProduct] = useState<{ id: string; name: string } | null>(null);
+  const [editProduct, setEditProduct] = useState<Product | null>(null);
+  const isProductInCart = (productId: string): boolean => {
+    return state.cart.some(item => item.id === productId);
+  };
+
+  // Extract unique categories
+  const categories = ['All', ...Array.from(new Set(products.map(product => product.category)))];
+
+  // Filter products based on search term
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleDeleteClick = (e: React.MouseEvent, product: Product) => {
+    e.stopPropagation(); // Prevent triggering the card click
+    setDeleteProduct({ id: product.id, name: product.name });
+  };
+
+  const handleEditClick = (e: React.MouseEvent, product: Product) => {
+    e.stopPropagation();
+    setEditProduct(product);
+  };
+
+  return (
+    <Card className="flex flex-col h-full p-4">
+      <div className="flex items-center justify-between mb-4">
+        <div className="relative flex-1 mr-4">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Search products..."
+            className="pl-8"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <Button
+          size="sm"
+          onClick={() => setShowAddProduct(true)}
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Add Product
+        </Button>
+      </div>
+
+      <Tabs defaultValue="All" className="flex-grow">
+        <TabsList className="w-full overflow-auto">
+          {categories.map(category => (
+            <TabsTrigger key={category} value={category} className="whitespace-nowrap">
+              {category}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        {categories.map(category => (
+          <TabsContent key={category} value={category} className="flex-grow overflow-auto">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-2">
+              {filteredProducts
+                .filter(product => category === 'All' || product.category === category)
+                .map(product => (
+                  <Card
+                    key={product.id}
+                    className="flex flex-col p-3 hover:bg-accent cursor-pointer transition-colors relative group"
+                    onClick={() => addToCart(product)}
+                  >
+                    {/* Add overlay for plus/check icon */}
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded">
+                        {isProductInCart(product.id) ? (
+                          <Check className="h-8 w-8 text-pos-success" />
+                        ) : (
+                          <Plus className="h-8 w-8 text-white" />
+                        )}
+                      </div>
+                    <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={(e) => handleEditClick(e, product)}
+                      >
+                        <Edit className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={(e) => handleDeleteClick(e, product)}
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    <div className="h-20 w-full bg-muted rounded flex items-center justify-center mb-2">
+                      {product.image ? (
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="h-full w-full object-cover rounded"
+                        />
+                      ) : (
+                        <span className="text-muted-foreground">No image</span>
+                      )}
+                    </div>
+                    <div className="font-medium text-sm truncate">{product.name}</div>
+                    <div className="font-bold text-sm mt-1 text-pos-primary">{formatCurrency(product.price)}</div>
+                  </Card>
+                ))}
+            </div>
+          </TabsContent>
+        ))}
+      </Tabs>
+
+      <ProductForm
+        open={showAddProduct || !!editProduct}
+        onClose={() => {
+          setShowAddProduct(false);
+          setEditProduct(null);
+        }}
+        onSuccess={async () => {
+          await fetchProducts();
+          setShowAddProduct(false);
+          setEditProduct(null);
+        }}
+        product={editProduct || undefined}
+      />
+      <DeleteProductDialog
+        open={!!deleteProduct}
+        onClose={() => setDeleteProduct(null)}
+        onSuccess={async () => {
+          await fetchProducts();
+          setDeleteProduct(null);
+        }}
+        productId={deleteProduct?.id || ''}
+        productName={deleteProduct?.name || ''}
+      />
+    </Card>
+  );
+}
