@@ -23,9 +23,9 @@ A modern, web-based Point of Sale system built with React, TypeScript, and Supab
 
 ## Project Structure
 src/
-├── components/     # Reusable UI components
-├── context/       # React Context providers
-├── hooks/         # Custom React hooks
-├── pages/         # Page components
-├── utils/         # Utility functions
-└── types/         # TypeScript type definitions
+├── components/ # Reusable UI components
+├── context/ # React Context providers
+├── hooks/ # Custom React hooks
+├── pages/ # Page components
+├── utils/ # Utility functions
+└── types/ # TypeScript type definitions
