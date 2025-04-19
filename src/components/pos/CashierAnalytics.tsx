@@ -71,21 +71,21 @@ export function CashierAnalytics() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Cashier Performance</CardTitle>
+        <CardTitle className="text-lg sm:text-xl">Cashier Performance</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-2 sm:space-y-4">
           {cashierSales.map((cashier) => (
-            <div key={cashier.cashier_name} className="flex justify-between items-center p-4 border rounded">
+            <div key={cashier.cashier_name} className="flex justify-between items-center p-2 sm:p-4 border rounded">
               <div>
-                <div className="font-medium">{cashier.cashier_name}</div>
-                <div className="text-sm text-muted-foreground text-pos-primary">
+                <div className="text-sm sm:text-base font-medium">{cashier.cashier_name}</div>
+                <div className="text-xs sm:text-sm text-muted-foreground text-pos-primary">
                   {cashier.items_sold} items sold
                 </div>
               </div>
               <div className="text-right">
-                <div className="font-bold text-pos-primary">{formatCurrency(cashier.total_sales)}</div>
-                <div className="text-sm text-muted-foreground">Total Sales</div>
+                <div className="text-sm sm:text-base font-bold text-pos-primary">{formatCurrency(cashier.total_sales)}</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Total Sales</div>
               </div>
             </div>
           ))}

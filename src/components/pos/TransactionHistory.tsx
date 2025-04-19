@@ -18,20 +18,20 @@ export function TransactionHistory() {
 
   return (
     <Card className="h-full">
-      <CardHeader className="pb-3">
-        <CardTitle>Recent Transactions</CardTitle>
-        <CardDescription>Transaction history and details</CardDescription>
+      <CardHeader className="pb-2 sm:pb-3">
+        <CardTitle className="text-lg sm:text-xl">Recent Transactions</CardTitle>
+        <CardDescription className="text-xs sm:text-sm">Transaction history and details</CardDescription>
       </CardHeader>
       <CardContent className="p-0">
-        <div className="border rounded-md overflow-hidden">
+        <div className="border rounded-md overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Cashier</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Items</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-                <TableHead className="text-right">Status</TableHead>
+                <TableHead className="text-xs sm:text-sm">Cashier</TableHead>
+                <TableHead className="text-xs sm:text-sm">Date</TableHead>
+                <TableHead className="text-xs sm:text-sm">Items</TableHead>
+                <TableHead className="text-xs sm:text-sm text-right">Amount</TableHead>
+                <TableHead className="text-xs sm:text-sm text-right">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

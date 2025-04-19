@@ -117,17 +117,17 @@ export function AnalyticsCharts() {
   return (
     <Card className="bg-white/80 backdrop-blur-sm border border-gray-100 shadow-sm">
       <CardHeader>
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <CardTitle className="text-2xl font-bold text-pos-primary">Sales Analytics</CardTitle>
-            <CardDescription className="text-gray-600">Overview of your store's performance</CardDescription>
+            <CardTitle className="text-xl sm:text-2xl font-bold text-pos-primary">Sales Analytics</CardTitle>
+            <CardDescription className="text-sm text-gray-600">Overview of your store's performance</CardDescription>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setTimeFrame('today')}
-              className={`${timeFrame === 'today' ? 'bg-pos-primary text-white' : 'bg-pos-primary/5'}`}
+              className={`text-xs sm:text-sm ${timeFrame === 'today' ? 'bg-pos-primary text-white' : 'bg-pos-primary/5'}`}
             >
               Today
             </Button>
@@ -135,7 +135,7 @@ export function AnalyticsCharts() {
               variant="outline"
               size="sm"
               onClick={() => setTimeFrame('week')}
-              className={`${timeFrame === 'week' ? 'bg-pos-primary text-white' : 'bg-pos-primary/5'}`}
+              className={`text-xs sm:text-sm ${timeFrame === 'week' ? 'bg-pos-primary text-white' : 'bg-pos-primary/5'}`}
             >
               Week
             </Button>
@@ -143,48 +143,47 @@ export function AnalyticsCharts() {
               variant="outline"
               size="sm"
               onClick={() => setTimeFrame('month')}
-              className={`${timeFrame === 'month' ? 'bg-pos-primary text-white' : 'bg-pos-primary/5'}`}
+              className={`text-xs sm:text-sm ${timeFrame === 'month' ? 'bg-pos-primary text-white' : 'bg-pos-primary/5'}`}
             >
               Month
             </Button>
           </div>
         </div>
       </CardHeader>
-      <CardContent>
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <Card className="bg-pos-primary/5 border-none p-4">
-            <div className="text-sm text-gray-600">Total Sales</div>
-            <div className="text-2xl font-bold text-pos-primary">{formatCurrency(calculateTotalSales())}</div>
+      <CardContent className="p-2 sm:p-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
+          <Card className="bg-pos-primary/5 border-none p-3 sm:p-4">
+            <div className="text-xs sm:text-sm text-gray-600">Total Sales</div>
+            <div className="text-lg sm:text-2xl font-bold text-pos-primary">{formatCurrency(calculateTotalSales())}</div>
           </Card>
-          <Card className="bg-pos-primary/5 border-none p-4">
-            <div className="text-sm text-gray-600">Total Transactions</div>
-            <div className="text-2xl font-bold text-pos-primary">{calculateTotalTransactions()}</div>
+          <Card className="bg-pos-primary/5 border-none p-3 sm:p-4">
+            <div className="text-xs sm:text-sm text-gray-600">Total Transactions</div>
+            <div className="text-lg sm:text-2xl font-bold text-pos-primary">{calculateTotalTransactions()}</div>
           </Card>
-          <Card className="bg-pos-primary/5 border-none p-4">
-            <div className="text-sm text-gray-600">Average Transaction</div>
-            <div className="text-2xl font-bold text-pos-primary">{formatCurrency(calculateAverageTransactionValue())}</div>
+          <Card className="bg-pos-primary/5 border-none p-3 sm:p-4">
+            <div className="text-xs sm:text-sm text-gray-600">Average Transaction</div>
+            <div className="text-lg sm:text-2xl font-bold text-pos-primary">{formatCurrency(calculateAverageTransactionValue())}</div>
           </Card>
         </div>
 
         <Tabs defaultValue="category" className="w-full">
-          <TabsList className="mb-4 bg-white/50 backdrop-blur-sm p-1 rounded-lg border border-gray-100">
+          <TabsList className="mb-4 bg-white/50 backdrop-blur-sm p-1 rounded-lg border border-gray-100 w-full sm:w-auto">
             <TabsTrigger 
               value="category"
-              className="data-[state=active]:bg-pos-primary data-[state=active]:text-white"
+              className="text-xs sm:text-sm data-[state=active]:bg-pos-primary data-[state=active]:text-white"
             >
               Sales by Category
             </TabsTrigger>
             <TabsTrigger 
               value="timeline"
-              className="data-[state=active]:bg-pos-primary data-[state=active]:text-white"
+              className="text-xs sm:text-sm data-[state=active]:bg-pos-primary data-[state=active]:text-white"
             >
               Sales Timeline
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="category" className="space-y-4">
-            <div className="h-[400px] w-full">
+          <TabsContent value="category" className="space-y-2 sm:space-y-4">
+            <div className="h-[250px] sm:h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -193,7 +192,7 @@ export function AnalyticsCharts() {
                     nameKey="category"
                     cx="50%"
                     cy="50%"
-                    outerRadius={150}
+                    outerRadius={80}
                     fill="#8884d8"
                     label={({ category, percent }) => `${category} (${(percent * 100).toFixed(0)}%)`}
                   >
@@ -208,8 +207,8 @@ export function AnalyticsCharts() {
             </div>
           </TabsContent>
 
-          <TabsContent value="timeline" className="space-y-4">
-            <div className="h-[400px] w-full">
+          <TabsContent value="timeline" className="space-y-2 sm:space-y-4">
+            <div className="h-[250px] sm:h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={calculateSalesByDate()}>
                   <CartesianGrid strokeDasharray="3 3" className="opacity-50" />
