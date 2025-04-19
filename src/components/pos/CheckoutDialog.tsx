@@ -23,6 +23,7 @@ export function CheckoutDialog() {
 
   const total = calculateTotal();
   const cashReceived = parseFloat(cashAmount) || 0;
+  const cashLimit = 10000; // Adjust this limit as needed
   const change = cashReceived - total;
 
   const handleCashAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,13 +38,14 @@ export function CheckoutDialog() {
   };
 
   const handleCompleteTransaction = () => {
-    if (cashReceived >= total) {
+    if (cashReceived >= total && cashReceived <= cashLimit) {
       const transaction = {
         id: uuidv4(),
         items: [...cart],
         total,
         paymentMethod: 'cash',
         cashReceived,
+        cashLimit,
         change,
         timestamp: new Date().toISOString(),
         status: 'completed' as const,
@@ -134,6 +136,11 @@ export function CheckoutDialog() {
                   placeholder="0.00"
                   autoFocus
                 />
+                {cashReceived > cashLimit && (
+                  <p className="text-sm text-destructive mt-1">
+                    Cash received exceeds the limit of {formatCurrency(cashLimit)}
+                  </p>
+                )}
               </div>
               {cashReceived > 0 && (
                 <div className="flex justify-between pt-2">
@@ -151,7 +158,7 @@ export function CheckoutDialog() {
               </Button>
               <Button 
                 className="flex-1 bg-pos-success hover:bg-pos-success/90" 
-                disabled={cashReceived < total}
+                disabled={cashReceived < total || cashReceived > cashLimit}
                 onClick={handleCompleteTransaction}
               >
                 Complete Payment
