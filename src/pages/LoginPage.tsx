@@ -41,7 +41,7 @@ export default function LoginPage() {
               <img
                 src="/src/assets/BlesseStoreIcon.png"
                 alt="Store Logo"
-                className="w-40 h-40 object-contain"
+                className="w-40 h-40 object-contain mix-blend-multiply contrast-125"
               />
             </div>
             <div className="text-center space-y-4">
