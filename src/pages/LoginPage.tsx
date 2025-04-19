@@ -39,7 +39,7 @@ export default function LoginPage() {
             <div className="w-48 h-48 mb-8 bg-pos-primary/20 rounded-full flex items-center justify-center">
               {/* Placeholder for logo */}
               <img
-                src="/src/assets/BlesseStoreIcon.png"
+                src="/images/BlesseStoreIcon.png"
                 alt="Store Logo"
                 className="w-40 h-40 object-contain mix-blend-multiply contrast-125"
               />

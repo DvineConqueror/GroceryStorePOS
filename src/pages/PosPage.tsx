@@ -19,7 +19,7 @@ export default function PosPage() {
         <div className="container mx-auto flex justify-between items-center p-4">
           <div className="flex items-center space-x-6">
             <div className="bg-pos-primary/30 p-2 rounded-full">
-              <img src="/src/assets/BlesseStoreIcon.png" className="w-12 h-12 rounded-full" alt="Store Logo" />
+              <img src="/images/BlesseStoreIcon.png" className="w-12 h-12 rounded-full" alt="Store Logo" />
             </div>
             <h1 className="text-2xl font-bold text-pos-primary">Grocery POS</h1>
           </div>
