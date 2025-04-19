@@ -28,11 +28,11 @@ export function Cart() {
   };
 
   return (
-    <Card className="flex flex-col h-[500px] p-4"> {/* Reduced fixed height */}
+    <Card className="flex flex-col h-[500px] p-4">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold flex items-center">
           <ShoppingBag className="mr-4 h-10 w-10" />
-          Shopping Cart
+          Grocery Items
         </h2>
         <Button
           variant="outline"
@@ -45,24 +45,20 @@ export function Cart() {
         </Button>
       </div>
 
-      <div className="flex-grow overflow-y-auto mb-4 pr-2" style={{ maxHeight: 'calc(100vh - 300px)' }}>
+      <div className="flex-grow overflow-y-auto mb-4 pr-2">
         {cart.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
             <ShoppingBag className="h-12 w-12 mb-2" />
-            <p>Cart is empty</p>
-            <p className="text-sm">Add items to begin</p>
+            <p className="text-lg font-medium">Cart is empty</p>
+            <p className="text-sm text-muted-foreground">Click on products to add them to your cart</p>
           </div>
         ) : (
           <ul className="space-y-3">
-            <div className="flex items-center justify-between mt-2">
-              <span className="font-bold  text-lg">Items:</span>
-              <span className="font-bold  text-lg">Price:</span>
-            </div>
             {cart.map(item => (
-              <li key={item.id} className="border-b pb-3">
+              <li key={item.id} className="border-b pb-3 hover:bg-accent/50 rounded-lg transition-colors p-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-medium">{item.name}</span>
-                  <span className='text-pos-primary'>{formatCurrency(item.price)}</span>
+                  <span className="font-medium truncate flex-1 mr-2">{item.name}</span>
+                  <span className='text-pos-primary shrink-0'>{formatCurrency(item.price)}</span>
                 </div>
                 <div className="flex items-center justify-between mt-2">
                   <div className="flex items-center space-x-2">
@@ -109,7 +105,13 @@ export function Cart() {
       </div>
 
       <div className="border-t pt-4 space-y-4 mt-auto">
-        <div className="flex items-center justify-between font-bold text-lg ">
+        <div className="flex flex-col space-y-2 text-sm text-muted-foreground">
+          <div className="flex justify-between">
+            <span>Items</span>
+            <span>{cart.reduce((acc, item) => acc + item.quantity, 0)} items</span>
+          </div>
+        </div>
+        <div className="flex items-center justify-between font-bold text-lg">
           <span>Total</span>
           <span className='text-pos-primary'>{formatCurrency(calculateTotal())}</span>
         </div>

@@ -23,7 +23,13 @@ export function ProductCatalog() {
   };
 
   // Extract unique categories
-  const categories = ['All', ...Array.from(new Set(products.map(product => product.category)))];
+  const categories = [
+    'All',
+    ...Array.from(new Set(products.map(product => product.category)))
+      .filter(category => category !== 'Others')
+      .sort((a, b) => a.localeCompare(b)),
+    'Others'
+  ];
 
   // Filter products based on search term
   const filteredProducts = products.filter(product =>
@@ -65,8 +71,8 @@ export function ProductCatalog() {
       </div>
 
       <Tabs defaultValue="All" className="flex-grow flex flex-col">
-        <div className="w-full border-b p-2 bg-white top-0 z-10">
-          <TabsList className="w-full flex flex-wrap gap-1.5 mb-2 sm:mb-2 md:mb-2">
+        <div className="w-full border-b bg-white top-0 z-10">
+          <TabsList className="w-full flex flex-wrap gap-3 mb-2 sm:mb-2 md:mb-2">
             {categories.map(category => (
               <TabsTrigger 
                 key={category} 
@@ -86,8 +92,12 @@ export function ProductCatalog() {
             className="flex-1 overflow-auto mt-16 sm:mt-2"
           >
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-2">
-              {filteredProducts
-                .filter(product => category === 'All' || product.category === category)
+            {filteredProducts
+              .filter(product => {
+                if (category === 'All') return true;
+                if (category === 'Others') return product.category === 'Others';
+                return product.category === category;
+              })
                 .map(product => (
                   <Card
                     key={product.id}
