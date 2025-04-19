@@ -59,7 +59,7 @@ export default function PosPage() {
           </div>
           
           <TabsContent value="pos" className="flex-grow flex flex-col space-y-4 md:space-y-0 md:flex-row md:space-x-6">
-            <div className="w-full md:w-2/3 bg-white rounded-xl shadow-sm border border-gray-100 p-2 sm:p-4">
+            <div className="flex-1 md:w-2/3 bg-white rounded-xl shadow-sm border border-gray-100 p-2 sm:p-4 min-h-0">
               <ProductCatalog />
             </div>
             <div className="w-full md:w-1/3 bg-white rounded-xl shadow-sm border border-gray-100 p-2 sm:p-4">

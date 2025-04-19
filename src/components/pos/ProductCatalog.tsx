@@ -42,9 +42,9 @@ export function ProductCatalog() {
   };
 
   return (
-    <Card className="flex flex-col h-full p-4">
-      <div className="flex items-center justify-between mb-4">
-        <div className="relative flex-1 mr-4">
+    <Card className="flex flex-col h-full p-2 sm:p-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4 mb-4">
+        <div className="relative w-full sm:flex-1 sm:mr-4">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
@@ -57,23 +57,35 @@ export function ProductCatalog() {
         <Button
           size="sm"
           onClick={() => setShowAddProduct(true)}
+          className="w-full sm:w-auto"
         >
           <Plus className="h-4 w-4 mr-2" />
           Add Product
         </Button>
       </div>
 
-      <Tabs defaultValue="All" className="flex-grow">
-        <TabsList className="w-full overflow-auto">
-          {categories.map(category => (
-            <TabsTrigger key={category} value={category} className="whitespace-nowrap">
-              {category}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+      <Tabs defaultValue="All" className="flex-grow flex flex-col">
+        <div className="w-full border-b p-2 bg-white top-0 z-10">
+          <TabsList className="w-full flex flex-wrap gap-1.5 mb-2 sm:mb-2 md:mb-2">
+            {categories.map(category => (
+              <TabsTrigger 
+                key={category} 
+                value={category} 
+                className="text-xs sm:text-sm px-3 py-1.5 rounded-full data-[state=active]:bg-pos-primary data-[state=active]:text-white min-w-[4rem]"
+              >
+                {category}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
+        
         {categories.map(category => (
-          <TabsContent key={category} value={category} className="flex-grow overflow-auto">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-2">
+          <TabsContent 
+            key={category} 
+            value={category} 
+            className="flex-1 overflow-auto mt-16 sm:mt-2"
+          >
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-2">
               {filteredProducts
                 .filter(product => category === 'All' || product.category === category)
                 .map(product => (
