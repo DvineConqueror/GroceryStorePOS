@@ -46,10 +46,11 @@ export function ProductForm({ open, onClose, onSuccess, product }: ProductFormPr
     }
   };
 
-  const categories = ['Snacks', 'Beverages', 'Candies', 'Instant Noodles', 'Canned Goods', 'Personal Care', 'Others'];
+  const categories = ['Snacks', 'Beverages', 'Candies', 'Instant Noodles', 'Canned Goods', 'Personal Care', 'Soap', 'Others'];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     setLoading(true);
 
     try {
@@ -170,11 +171,11 @@ export function ProductForm({ open, onClose, onSuccess, product }: ProductFormPr
           <div>
             <Label htmlFor="image">Product Image</Label>
             {imagePreview && (
-              <div className="mb-2">
+              <div className="mb-2 h-32 w-32 overflow-hidden rounded flex items-center justify-center bg-gray-100">
                 <img
                   src={imagePreview}
                   alt="Product preview"
-                  className="h-32 w-32 object-cover rounded"
+                  className="w-full h-full object-cover"
                 />
               </div>
             )}

@@ -135,7 +135,7 @@ export function ProductCatalog() {
                         <img
                           src={product.image}
                           alt={product.name}
-                          className="h-full w-full object-cover rounded"
+                          className="h-full w-full object-scale-down rounded"
                         />
                       ) : (
                         <span className="text-muted-foreground">No image</span>
