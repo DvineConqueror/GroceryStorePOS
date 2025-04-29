@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
 import { Product } from '@/types';
 import { useEffect } from 'react';
@@ -46,7 +46,13 @@ export function ProductForm({ open, onClose, onSuccess, product }: ProductFormPr
     }
   };
 
-  const categories = ['Snacks', 'Beverages', 'Candies', 'Instant Noodles', 'Canned Goods', 'Personal Care', 'Soap', 'Others'];
+  // Organized categories by groups
+  const categoryGroups = {
+    "Food": ['Snacks', 'Candies', 'Instant Noodles', 'Canned Goods'],
+    "Beverages": ['Beverages', 'Soft Drinks', 'Juices', 'Water'],
+    "Personal Care": ['Personal Care', 'Soap', 'Shampoo', 'Toothpaste'],
+    "Other": ['Others']
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -150,10 +156,15 @@ export function ProductForm({ open, onClose, onSuccess, product }: ProductFormPr
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
-                {categories.map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {cat}
-                  </SelectItem>
+                {Object.entries(categoryGroups).map(([groupName, categories]) => (
+                  <SelectGroup key={groupName}>
+                    <SelectLabel>{groupName}</SelectLabel>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat} value={cat}>
+                        {cat}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
                 ))}
               </SelectContent>
             </Select>

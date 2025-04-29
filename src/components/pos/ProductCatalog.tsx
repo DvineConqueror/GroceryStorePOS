@@ -1,10 +1,11 @@
 
 import { Search, Plus, Trash2, Edit, Check } from 'lucide-react';
+import { Filter } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useState } from 'react';
 import { usePos } from '@/context/PosContext';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { formatCurrency } from '@/utils/format';
 import { ProductForm } from './ProductForm';
 import { Button } from '@/components/ui/button';
@@ -15,6 +16,7 @@ export function ProductCatalog() {
   const { state, addToCart, fetchProducts } = usePos();
   const { products } = state;
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [deleteProduct, setDeleteProduct] = useState<{ id: string; name: string } | null>(null);
   const [editProduct, setEditProduct] = useState<Product | null>(null);
@@ -31,11 +33,18 @@ export function ProductCatalog() {
     'Others'
   ];
 
-  // Filter products based on search term
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter products based on search term and selected category
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.category.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesCategory = 
+      selectedCategory === 'All' ? true :
+      selectedCategory === 'Others' ? product.category === 'Others' :
+      product.category === selectedCategory;
+    
+    return matchesSearch && matchesCategory;
+  });
 
   const handleDeleteClick = (e: React.MouseEvent, product: Product) => {
     e.stopPropagation(); // Prevent triggering the card click
@@ -60,95 +69,84 @@ export function ProductCatalog() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Button
-          size="sm"
-          onClick={() => setShowAddProduct(true)}
-          className="w-full sm:w-auto"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add Product
-        </Button>
+        <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-2">
+          <div className="w-full sm:w-[140px]">
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger className="h-9">
+                <Filter className="h-4 w-4 mr-2" />
+                <SelectValue placeholder="Filter by category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map(category => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <Button
+            size="sm"
+            onClick={() => setShowAddProduct(true)}
+            className="w-full sm:w-auto"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Product
+          </Button>
+        </div>
       </div>
 
-      <Tabs defaultValue="All" className="flex-grow flex flex-col">
-        <div className="w-full border-b bg-white top-0 z-10">
-          <TabsList className="w-full flex flex-wrap gap-3 mb-2 sm:mb-2 md:mb-2">
-            {categories.map(category => (
-              <TabsTrigger 
-                key={category} 
-                value={category} 
-                className="text-xs sm:text-sm px-3 py-1.5 rounded-full data-[state=active]:bg-pos-primary data-[state=active]:text-white min-w-[4rem]"
-              >
-                {category}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+      <div className="flex-1 overflow-auto">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-2">
+          {filteredProducts.map(product => (
+            <Card
+              key={product.id}
+              className="flex flex-col p-3 hover:bg-accent cursor-pointer transition-colors relative group"
+              onClick={() => addToCart(product)}
+            >
+              {/* Add overlay for plus/check icon */}
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded">
+                {isProductInCart(product.id) ? (
+                  <Check className="h-8 w-8 text-pos-success" />
+                ) : (
+                  <Plus className="h-8 w-8 text-white" />
+                )}
+              </div>
+              <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className="h-6 w-6"
+                  onClick={(e) => handleEditClick(e, product)}
+                >
+                  <Edit className="h-3 w-3" />
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="icon"
+                  className="h-6 w-6"
+                  onClick={(e) => handleDeleteClick(e, product)}
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </div>
+              <div className="h-20 w-full bg-muted rounded flex items-center justify-center mb-2">
+                {product.image ? (
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="h-full w-full object-scale-down rounded"
+                  />
+                ) : (
+                  <span className="text-muted-foreground">No image</span>
+                )}
+              </div>
+              <div className="font-medium text-sm truncate">{product.name}</div>
+              <div className="font-bold text-sm mt-1 text-pos-primary">{formatCurrency(product.price)}</div>
+            </Card>
+          ))}
         </div>
-        
-        {categories.map(category => (
-          <TabsContent 
-            key={category} 
-            value={category} 
-            className="flex-1 overflow-auto mt-16 sm:mt-2"
-          >
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-2">
-            {filteredProducts
-              .filter(product => {
-                if (category === 'All') return true;
-                if (category === 'Others') return product.category === 'Others';
-                return product.category === category;
-              })
-                .map(product => (
-                  <Card
-                    key={product.id}
-                    className="flex flex-col p-3 hover:bg-accent cursor-pointer transition-colors relative group"
-                    onClick={() => addToCart(product)}
-                  >
-                    {/* Add overlay for plus/check icon */}
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded">
-                        {isProductInCart(product.id) ? (
-                          <Check className="h-8 w-8 text-pos-success" />
-                        ) : (
-                          <Plus className="h-8 w-8 text-white" />
-                        )}
-                      </div>
-                    <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                      <Button
-                        variant="secondary"
-                        size="icon"
-                        className="h-6 w-6"
-                        onClick={(e) => handleEditClick(e, product)}
-                      >
-                        <Edit className="h-3 w-3" />
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        size="icon"
-                        className="h-6 w-6"
-                        onClick={(e) => handleDeleteClick(e, product)}
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </div>
-                    <div className="h-20 w-full bg-muted rounded flex items-center justify-center mb-2">
-                      {product.image ? (
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="h-full w-full object-scale-down rounded"
-                        />
-                      ) : (
-                        <span className="text-muted-foreground">No image</span>
-                      )}
-                    </div>
-                    <div className="font-medium text-sm truncate">{product.name}</div>
-                    <div className="font-bold text-sm mt-1 text-pos-primary">{formatCurrency(product.price)}</div>
-                  </Card>
-                ))}
-            </div>
-          </TabsContent>
-        ))}
-      </Tabs>
+      </div>
 
       <ProductForm
         open={showAddProduct || !!editProduct}
