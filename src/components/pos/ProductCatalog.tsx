@@ -72,7 +72,7 @@ export function ProductCatalog() {
         <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-2">
           <div className="w-full sm:w-[140px]">
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger className="h-9">
+              <SelectTrigger className="h-9 bg-pos-primary text-white font-semibold">
                 <Filter className="h-4 w-4 mr-2" />
                 <SelectValue placeholder="Filter by category" />
               </SelectTrigger>
@@ -88,8 +88,7 @@ export function ProductCatalog() {
           <Button
             size="sm"
             onClick={() => setShowAddProduct(true)}
-            className="w-full sm:w-auto"
-          >
+            className="w-full sm:w-auto">
             <Plus className="h-4 w-4 mr-2" />
             Add Product
           </Button>

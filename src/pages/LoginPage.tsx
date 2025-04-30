@@ -5,14 +5,28 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { Eye } from 'lucide-react'
+import { EyeOff } from 'lucide-react'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [type, setType] = useState('password');
+  const [icon, setIcon] = useState(<EyeOff />);
   const [isSignUp, setIsSignUp] = useState(false);
   const [fullName, setFullName] = useState('');
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
+
+  const togglePasswordVisibility = () => {
+    if (type === 'password') {
+      setType('text');
+      setIcon(<Eye />);
+    } else {
+      setType('password');
+      setIcon(<EyeOff />);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,15 +112,24 @@ export default function LoginPage() {
                     <Label htmlFor="password" className="text-sm font-medium">
                       Password
                     </Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="h-11 px-4 border-gray-200 focus:border-pos-primary focus:ring-pos-primary/20"
-                      placeholder="••••••••"
-                      required
-                    />
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        type={type}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="h-11 px-4 pr-10 border-gray-200 focus:border-pos-primary focus:ring-pos-primary/20"
+                        placeholder="••••••••"
+                        required
+                      />
+                      <button 
+                        type="button"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-pos-primary transition-colors duration-300"
+                        onClick={togglePasswordVisibility}
+                      >
+                        {icon}
+                      </button>
+                    </div>
                   </div>
                   <Button 
                     type="submit" 
