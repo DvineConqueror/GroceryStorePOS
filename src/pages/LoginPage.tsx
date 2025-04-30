@@ -5,8 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Eye } from 'lucide-react'
-import { EyeOff } from 'lucide-react'
+import { Eye, EyeOff, ShieldCheck } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -41,6 +40,16 @@ export default function LoginPage() {
       navigate('/');
     } catch (error) {
       console.error('Authentication error:', error);
+    }
+  };
+
+  const handleAdminLogin = async () => {
+    try {
+      // Navigate to admin page after successful login
+      await signIn(email, password);
+      navigate('/admin');
+    } catch (error) {
+      console.error('Admin authentication error:', error);
     }
   };
 
@@ -131,12 +140,27 @@ export default function LoginPage() {
                       </button>
                     </div>
                   </div>
-                  <Button 
-                    type="submit" 
-                    className="w-full h-11 bg-pos-primary hover:bg-pos-primary/90 duration-500 text-white font-medium"
-                  >
-                    {isSignUp ? 'Create Account' : 'Sign In'}
-                  </Button>
+                  <div className="flex flex-col gap-3">
+                    <Button 
+                      type="submit" 
+                      className="w-full h-11 bg-pos-primary hover:bg-pos-primary/90 duration-500 text-white font-medium"
+                    >
+                      {isSignUp ? 'Create Account' : 'Sign In'}
+                    </Button>
+                    
+                    {!isSignUp && (
+                      <Button 
+                        type="button" 
+                        variant="outline"
+                        className="w-full h-11 border-pos-primary text-pos-primary hover:bg-pos-primary/10 duration-500 font-medium"
+                        onClick={handleAdminLogin}
+                      >
+                        <ShieldCheck className="mr-2 h-4 w-4" />
+                        Sign In as Admin
+                      </Button>
+                    )}
+                  </div>
+                  
                   <Button
                     type="button"
                     variant="link"

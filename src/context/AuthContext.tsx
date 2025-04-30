@@ -3,18 +3,18 @@ import { User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 
-// Add this interface near the top of the file
 interface Profile {
   id: string;
   full_name: string;
   role: string;
+  approved: boolean;  // Added approved field
   created_at: string | null;
   updated_at: string | null;
 }
 
 interface AuthContextType {
   user: User | null;
-  profile: Profile | null;  // Update this line
+  profile: Profile | null;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, fullName: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -27,12 +27,11 @@ export const useAuth = () => useContext(AuthContext);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);  // Update this line
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check active sessions and subscribe to auth changes
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       if (session?.user) {
@@ -45,6 +44,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(session?.user ?? null);
       if (session?.user) {
         fetchProfile(session.user.id);
+      } else {
+        setProfile(null);
       }
     });
 
@@ -76,9 +77,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error) throw error;
   
       if (user) {
-        // Fetch profile after successful login
-        await fetchProfile(user.id);
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+  
+        if (profileError) throw profileError;
+  
+        if (!profileData.approved) {
+          await supabase.auth.signOut();
+          throw new Error('Your account is not yet approved by an admin.');
+        }
+  
+        setProfile(profileData);
+        return profileData;
       }
+      return null;
     } catch (error: any) {
       toast({
         title: "Error",
@@ -90,7 +105,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string, fullName: string) => {
     try {
-      // First sign up the user
       const { data: { user }, error } = await supabase.auth.signUp({ 
         email, 
         password
@@ -99,29 +113,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error) throw error;
   
       if (user) {
-        // Create profile with role using service role client
         const { error: profileError } = await supabase
           .from('profiles')
           .insert([{ 
             id: user.id, 
             full_name: fullName,
-            role: 'cashier'
+            role: 'cashier',
+            approved: false  // Set approved to false by default
           }])
           .select()
           .single();
   
         if (profileError) {
           console.error('Profile creation error:', profileError);
-          // Delete the user if profile creation fails
           await supabase.auth.admin.deleteUser(user.id);
           throw new Error('Failed to create user profile');
         }
   
-        // Set the profile immediately
         setProfile({
           id: user.id,
           full_name: fullName,
           role: 'cashier',
+          approved: false,
           created_at: null,
           updated_at: null
         });
@@ -129,7 +142,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   
       toast({
         title: "Success",
-        description: "Account created successfully",
+        description: "Account created successfully. Please wait for admin approval.",
       });
     } catch (error: any) {
       toast({

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -10,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import { AuthProvider } from '@/context/AuthContext';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
+import AdminPage from './pages/AdminPage';
 
 const App = () => {
   const queryClient = new QueryClient();
@@ -27,6 +27,11 @@ const App = () => {
                 <Route path="/" element={
                   <ProtectedRoute>
                     <Index />
+                  </ProtectedRoute>
+                } />
+                <Route path="/admin" element={
+                  <ProtectedRoute>
+                    <AdminPage />
                   </ProtectedRoute>
                 } />
                 <Route path="*" element={<NotFound />} />

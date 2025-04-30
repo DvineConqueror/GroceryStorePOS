@@ -1,9 +1,8 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { Progress } from '@radix-ui/react-progress';
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+  const { user, profile, loading } = useAuth();
 
   if (loading) {
     return <div className="flex items-center justify-center h-screen">
@@ -15,7 +14,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
     </div>;
   }
 
-  if (!user) {
+  if (!user || !profile?.approved) {
     return <Navigate to="/login" />;
   }
 
