@@ -9,6 +9,17 @@ import { Input } from '@/components/ui/input';
 import { formatCurrency } from '@/utils/format';
 import { ProductForm } from './ProductForm';
 import { Button } from '@/components/ui/button';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
+import { useEffect } from 'react';
 import { DeleteProductDialog } from './DeleteProductDialog';
 import { Product } from '@/types'; // Add this import
 
@@ -20,6 +31,8 @@ export function ProductCatalog() {
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [deleteProduct, setDeleteProduct] = useState<{ id: string; name: string } | null>(null);
   const [editProduct, setEditProduct] = useState<Product | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
   const isProductInCart = (productId: string): boolean => {
     return state.cart.some(item => item.id === productId);
   };
@@ -45,6 +58,17 @@ export function ProductCatalog() {
     
     return matchesSearch && matchesCategory;
   });
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentProducts = filteredProducts.slice(startIndex, endIndex);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedCategory]);
 
   const handleDeleteClick = (e: React.MouseEvent, product: Product) => {
     e.stopPropagation(); // Prevent triggering the card click
@@ -97,7 +121,7 @@ export function ProductCatalog() {
 
       <div className="flex-1 overflow-auto">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-2">
-          {filteredProducts.map(product => (
+          {currentProducts.map(product => (
             <Card
               key={product.id}
               className="flex flex-col p-3 hover:bg-accent cursor-pointer transition-colors relative group"
@@ -146,6 +170,49 @@ export function ProductCatalog() {
           ))}
         </div>
       </div>
+
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-4">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-9 w-9 bg-background hover:bg-accent hover:text-accent-foreground"
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+              </PaginationItem>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                <PaginationItem key={page}>
+                  <Button
+                    variant={currentPage === page ? "default" : "outline"}
+                    size="icon"
+                    className={`h-9 w-9 ${currentPage === page ? 'bg-pos-primary text-white hover:bg-pos-primary/90' : 'bg-background hover:bg-accent hover:text-accent-foreground'}`}
+                    onClick={() => setCurrentPage(page)}
+                  >
+                    {page}
+                  </Button>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-9 w-9 bg-background hover:bg-accent hover:text-accent-foreground"
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
 
       <ProductForm
         open={showAddProduct || !!editProduct}
