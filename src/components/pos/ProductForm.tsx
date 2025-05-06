@@ -155,12 +155,12 @@ export function ProductForm({ open, onClose, onSuccess, product }: ProductFormPr
               <SelectTrigger>
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="max-h-[300px]">
                 {Object.entries(categoryGroups).map(([groupName, categories]) => (
-                  <SelectGroup key={groupName}>
-                    <SelectLabel>{groupName}</SelectLabel>
+                  <SelectGroup key={groupName} className="relative">
+                    <SelectLabel className="px-2 py-1.5 text-sm font-semibold bg-muted/50">{groupName}</SelectLabel>
                     {categories.map((cat) => (
-                      <SelectItem key={cat} value={cat}>
+                      <SelectItem key={cat} value={cat} className="pl-4">
                         {cat}
                       </SelectItem>
                     ))}
